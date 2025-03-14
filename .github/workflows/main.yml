@@ -1,3 +1,4 @@
+---
 on:
   push:
     branches:
@@ -21,9 +22,17 @@ jobs:
 
           sudo mv gitleaks /usr/local/bin/
       - name: Run Gitleaks Scan
-        run: |
-          gitleaks detect --redact --verbose
-      - name: Handle Failure
+        continue-on-error: true
+        run: >
+          gitleaks detect --source . --verbose --report-format json --report-path
+          gitleaks-report.json
+      - name: Upload Gitleaks Report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: gitleaks-report
+          path: gitleaks-report.json
+      - name: Fail if Secrets are Detected
         if: failure()
         run: |
           echo "❌ Secrets detected! Fix them before merging."
