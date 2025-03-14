@@ -6,25 +6,25 @@ on:
     branches:
       - master
 jobs:
- gitleaks-scan:
-    runs-on: ubuntu-latest
+	  gitleaks-scan:
+		runs-on: ubuntu-latest
 
-    steps:
-     - name: checkout code 
-     - uses: actions/checkout@v4
+		steps:
+		  - name: Checkout Code
+			uses: actions/checkout@v4
 
-     - name: install Gitleaks 
-       run: |
-          curl -sSL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64 -o gitleaks
-          chmod +x gitleaks
-          sudo mv gitleaks /usr/local/bin/
-     - name: Run Gitleaks Scan
-       run: gitleaks detect --redact --verbose
+		  - name: Install Gitleaks	
+			run: |
+			  curl -sSL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64 -o gitleaks
+			  chmod +x gitleaks
+              sudo mv gitleaks /usr/local/bin/
 
-     - name: Handle Failure
-       if: steps.gitleaks.outcome == 'failure'
-       run: |
-          echo "❌ Secrets detected! Fix them before merging."
-          exit 1
-          
-      
+		  - name: Run Gitleaks Scan
+			run: |
+			  gitleaks detect --redact --verbose
+
+		  - name: Handle Failure
+			if: failure()
+			run: |
+			  echo "❌ Secrets detected! Fix them before merging."
+			  exit 1
