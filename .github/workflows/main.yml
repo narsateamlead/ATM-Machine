@@ -1,0 +1,28 @@
+on:
+  push:
+    branches:
+       - "**" # ALL branches
+  pull_request:
+    branches:
+      - "**" # ALL branches
+jobs:
+ gitleaks-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+     - name: checkout code 
+     - uses: actions/checkout@v4
+
+     - name: install Gitleaks 
+       run: |
+          curl -sSL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64 -o gitleaks
+          chmod +x gitleaks
+          sudo mv gitleaks /usr/local/bin/
+     - name: Run Gitleaks Scan
+       run: gitleaks detect --redact --verbose
+
+     - name: Fail the Build if Secrets Are Found
+       run: |
+          gitleaks detect --exit-code 1
+          
+      
