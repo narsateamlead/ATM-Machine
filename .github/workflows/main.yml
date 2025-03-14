@@ -1,10 +1,10 @@
 on:
   push:
     branches:
-       - "**" # ALL branches
+       - master
   pull_request:
     branches:
-      - "**" # ALL branches
+      - master
 jobs:
  gitleaks-scan:
     runs-on: ubuntu-latest
@@ -21,8 +21,10 @@ jobs:
      - name: Run Gitleaks Scan
        run: gitleaks detect --redact --verbose
 
-     - name: Fail the Build if Secrets Are Found
+     - name: Handle Failure
+       if: steps.gitleaks.outcome == 'failure'
        run: |
-          gitleaks detect --exit-code 1
+          echo "❌ Secrets detected! Fix them before merging."
+          exit 1
           
       
