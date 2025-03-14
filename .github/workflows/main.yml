@@ -1,31 +1,30 @@
 on:
   push:
     branches:
-       - master
+      - master
   pull_request:
     branches:
       - master
 jobs:
   gitleaks-scan:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-
       - name: Install Gitleaks
-        run: |
-          curl -sSL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64 -o gitleaks
-          chmod +x gitleaks
-          sudo mv gitleaks /usr/local/bin/
+        run: >
+          curl -sSL
+          https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64
+          -o gitleaks
 
+          chmod +x gitleaks
+
+          sudo mv gitleaks /usr/local/bin/
       - name: Run Gitleaks Scan
-        id: gitleaks
-        continue-on-error: true
-        run: gitleaks detect --redact --verbose
+        run: |
+          gitleaks detect --redact --verbose
       - name: Handle Failure
-        if: steps.gitleaks.outcome == 'failure'
+        if: failure()
         run: |
           echo "❌ Secrets detected! Fix them before merging."
           exit 1
-			  
