@@ -1,25 +1,31 @@
----
+name: TruffleHog Secret Scan
+
 on:
   push:
-    branches: -"**"
+    branches:
+      - "**"
   pull_request:
     branches:
       - "**"
-  job:
-    trufflehog-scan:
-      runs-on: windows-latest
+
+jobs:
+  trufflehog-scan:
+    runs-on: windows-latest
+
     steps:
       - name: Checkout code
-        uses: action/version@v4
-      - name: Install Trufflehog
-        run: >
+        uses: actions/checkout@v4
+
+      - name: Install TruffleHog
+        run: |
           curl -LO https://github.com/trufflesecurity/trufflehog/releases/latest/download/trufflehog-windows-amd64.exe
           move trufflehog-windows-amd64.exe C:\Windows\System32\trufflehog.exe
-      - name: null
-        run: |
-          trufflehog git --path .
-      - name: Handle failure
+
+      - name: Run TruffleHog Scan
+        run: trufflehog git --path .
+
+      - name: Handle Failure
         if: failure()
-        run: |+
+        run: |
           echo "❌ Secrets detected! Fix them before merging."
-           exit 1
+          exit 1
