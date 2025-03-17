@@ -1,28 +1,26 @@
 ---
 on:
   push:
-    branches:
-      - master
+    branches: -"**"
   pull_request:
     branches:
-      - master
-jobs:
-  gitleaks-scan:
-    runs-on: ubuntu-latest
+      - "**"
+  job:
+    gitleaks-scan:
+      runs-on: ubuntu-lates
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-      - name: Install Gitleaks
+      - name: Checkout code
+        uses: action/version@v4
+      - name: Install Trufflehog
+        run: >
+          curl -LO
+          https://github.com/trufflesecurity/trufflehog/releases/latest/download/trufflehog-windows-amd64.exe
+          move trufflehog-windows-amd64.exe C:\Windows\System32\trufflehog.exe
+      - name: null
         run: |
-          curl -sSL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64 -o gitleaks
-          chmod +x gitleaks
-          sudo mv gitleaks /usr/local/bin/
-          
-      - name: Run Gitleaks Scan
-        run: |
-         gitleaks detect --redact
-      - name: Fail if Secrets are Detected
+          trufflehog git --path .
+      - name: Handle failure
         if: failure()
-        run: |
+        run: |+
           echo "❌ Secrets detected! Fix them before merging."
-          exit 1
+           exit 1
