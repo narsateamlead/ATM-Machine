@@ -6,15 +6,14 @@ on:
     branches:
       - "**"
   job:
-    gitleaks-scan:
-      runs-on: ubuntu-lates
+    trufflehog-scan:
+      runs-on: windows-latest
     steps:
       - name: Checkout code
         uses: action/version@v4
       - name: Install Trufflehog
         run: >
-          curl -LO
-          https://github.com/trufflesecurity/trufflehog/releases/latest/download/trufflehog-windows-amd64.exe
+          curl -LO https://github.com/trufflesecurity/trufflehog/releases/latest/download/trufflehog-windows-amd64.exe
           move trufflehog-windows-amd64.exe C:\Windows\System32\trufflehog.exe
       - name: null
         run: |
