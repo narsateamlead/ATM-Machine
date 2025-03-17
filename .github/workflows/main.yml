@@ -28,7 +28,7 @@ jobs:
 
       - name: Run TruffleHog Scan
         run: |
-          ./trufflehog.exe git --path .
+          trufflehog filesystem --path . --only-verified
 
       - name: Handle Failure
         if: failure()
