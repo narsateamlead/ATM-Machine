@@ -16,13 +16,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install TruffleHog
+      - name: Download TruffleHog
         run: |
           curl -LO https://github.com/trufflesecurity/trufflehog/releases/latest/download/trufflehog-windows-amd64.exe
-          move trufflehog-windows-amd64.exe C:\Windows\System32\trufflehog.exe
+          move trufflehog-windows-amd64.exe trufflehog.exe
+
+      - name: Set Execution Permissions
+        run: |
+          icacls trufflehog.exe /grant Everyone:F
+          echo "TruffleHog installed successfully."
 
       - name: Run TruffleHog Scan
-        run: trufflehog git --path .
+        run: |
+          ./trufflehog.exe git --path .
 
       - name: Handle Failure
         if: failure()
